@@ -7,6 +7,7 @@ function Character(name) {
 	this.name = name; 
 	this.indexColor = 0;
 	this.stories = []; 
+	this.visible = false; 
 
 	//METHODS
 	//draw the object 
@@ -31,7 +32,8 @@ function Story(name) {
 	this.y = 0; 
 	this.radius = 0; 
 	this.name = name;
-	this.colorHSB = 0; 
+	this.colorHSB = 0;
+	this.visible = false;  
 
 	//METHODS
 	this.show = function(radius) {

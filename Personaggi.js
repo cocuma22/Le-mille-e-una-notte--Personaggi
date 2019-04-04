@@ -206,4 +206,34 @@ function countStories() {
     return counter; 
 } 
 
+//------------------------------------------------
+function mouseClicked() {
+    //check if the mouse has clicked on the central circle 
+    if(checkHover(centralCircleX, centralCircleY, centralRadius)) {
+        for(var i = 0; i < characters.length; i++) {
+            characters[i].visible = !characters[i].visible; 
+        }
+    }
+
+    //check if the mouse has clicked on a character circle
+    for(var i = 0; i < characters.length; i++) {
+        if(checkHover(characters[i].x, characters[i].y, characters[i].radius)) {
+            for(var j = 0; j < characters[i].stories.length; j++) {
+                characters[i].stories[j].visible = !characters[i].stories[j].visible;
+            }
+        }
+    }
+}
+
+//------------------------------------------------
+function checkHover(x, y, r) {
+    var d = dist(mouseX, mouseY, x, y); 
+
+    if(d < r) {
+        return true; 
+    } else {
+        return false; 
+    }
+}
+
 
