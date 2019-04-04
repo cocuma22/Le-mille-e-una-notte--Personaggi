@@ -58,7 +58,7 @@ function drawStories() {
     for(var i = 0; i < characters.length; i++) {
         for(var j = 0; j < characters[i].stories.length; j++) { 
 
-            fill(colors[characters[i].stories[j].indexColor]);
+            fill(characters[i].stories[j].colorHSB);
             characters[i].stories[j].show(storiesRadius);
         }
     }

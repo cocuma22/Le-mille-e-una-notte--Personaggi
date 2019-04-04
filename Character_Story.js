@@ -23,7 +23,7 @@ function Character(name) {
 		textSize(12); 
 		textAlign(CENTER, CENTER);
 		rectMode(CENTER);
-		text(this.name, this.x, this.y, 60, 60);
+		text(this.name, this.x, this.y, 100, 60);
 	}
 }
 
@@ -33,8 +33,8 @@ function Story(name) {
 	this.x = 0; 
 	this.y = 0; 
 	this.name = name;
-	this.indexColor = 0; 
-	this.hue = 0; 
+	//this.indexColor = 0; 
+	this.colorHSB = 0; 
 
 	//METHODS
 	this.show = function(radius) {

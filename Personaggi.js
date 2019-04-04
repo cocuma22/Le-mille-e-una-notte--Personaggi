@@ -5,17 +5,10 @@ var characterStories = []; //array of array where each element is in the form [c
 var characters = []; //array of objects 'Character' that contains characters
 
 //colors
-var colors = [
-            '#ffff33', // color(60, 80, 100); yellow (central circle)
-            '#e41a1c', // color(359, 89, 89); red
-            '#377eb8', // color(207, 70, 72); blue
-            '#4daf4a', // color(118, 58, 69); green
-            '#984ea3', // color(292, 52, 64); purple
-            '#ff7f00'  // color(30, 100, 100); orange
-            ]; 
-var backgroundColor = '#ffffd4'; // color(60, 17, 100); the same color of the other visualization
-var strokeColor = '#000'; // color(0, 0, 0); black
-var colorText = '#000'; // coor(0, 0, 0); black
+var colors = [];
+var backgroundColor;
+var strokeColor; 
+var colorText; 
 
 var centralCircleX, centralCircleY; //position of the central circle
 var centralRadius, charactersRadius, storiesRadius; //radius; 
@@ -40,18 +33,33 @@ function setup() {
     charactersRadius = 60;
     storiesRadius = 30; 
 
+    defineColor();
+
     getData();
 
     createCharacters();
-
-    computeStoriesColor();
-
 }
 
 //------------------------------------------------
 function draw() {
     background(backgroundColor); 
     drawGraph(); 
+}
+
+//------------------------------------------------
+function defineColor() {
+    colorMode(HSB);
+    colors = [
+            color(60, 80, 100), //yellow (central circle)
+            color(359, 89, 89), //red
+            color(207, 70, 72), //blue
+            color(118, 58, 69), //green
+            color(292, 52, 64), //purple
+            color(30, 100, 100) //orange
+            ]; 
+    backgroundColor = color(60, 17, 100); //the same color of the other visualization
+    strokeColor = color(0, 0, 0); //black
+    colorText = color(0, 0, 0); //black
 }
 
 //------------------------------------------------
@@ -147,15 +155,31 @@ function updateStories() {
     var angle = -PI * 5/6; //-PI * 8/9
     var stepAngle = TWO_PI/countStories();
     var distance = 300;
+    var numStories = 0; 
+
+    var h, s, b, newS; 
 
     //compute x and y properties of every object 'Story' inside each character
     for(var i = 0; i < characters.length; i++) {
+
+        numStories = characters[i].stories.length;
+        newS = floor(100/numStories);
+
+        //update colorHSB property
+        h = hue(colors[characters[i].indexColor]);
+        s = newS;
+        b = brightness(colors[characters[i].indexColor]);
+
         for(var j = 0; j < characters[i].stories.length; j++){
             characters[i].stories[j].x = cos(angle) * distance + centralCircleX; 
             characters[i].stories[j].y = sin(angle) * distance + centralCircleY; 
             angle += stepAngle; 
 
-            characters[i].stories[j].indexColor = i+1; 
+            //characters[i].stories[j].indexColor = i+1; //update indexColor property 
+
+            characters[i].stories[j].colorHSB = color(h, s, b);
+
+            s += newS; 
         }
     }
 }
@@ -170,21 +194,5 @@ function countStories() {
 
     return counter; 
 } 
-
-//------------------------------------------------
-function computeStoriesColor() {
-    var hue; 
-
-    for(var i = 0; i < characters.length; i++) {
-        for(var j = 0; j < characters[i].stories.length; j++) {
-            hue = colors[characters[i].stories[j].indexColor];
-
-        }
-    }
-    
-    
-}
-
-
 
 
