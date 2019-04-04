@@ -1,54 +1,61 @@
 //------------------------------------------------
 function drawGraph() {
 
-    drawLinks(TWO_PI/characters.length, centralRadius, centralCircleX, 
-                centralCircleY, charactersRadius, characters); //draws lines from the central circle to every character circle
+    drawLinks();
     
-    drawCentralCircle(); 
+    drawFirstCircle(); 
     
     drawCharacters(); //draws each character
 
     drawStories(); 
+
+
 }
 
 //------------------------------------------------
 //draw character circles 
 function drawCharacters() { 
     for(var i = 0; i < characters.length; i++) {
+        stroke(strokeColor);
         fill(colors[characters[i].indexColor]);
         characters[i].show(charactersRadius); //draw a circle for each character
+        
+        fill(colorText);
         characters[i].showText(colorText); //write the name of each character
     } 
 }
 
 ////------------------------------------------------
-function drawCentralCircle() {
+function drawFirstCircle() {
     //color and stroke settings 
+    strokeWeight(2);
     fill(colors[0]); 
-    stroke(strokeColor);
-    strokeWeight(5);
 
     circle(centralCircleX, centralCircleY, centralRadius); //central circle
+
+    fill(colorText);
+    textAlign(CENTER, CENTER);
+    text("Personaggi", centralCircleX, centralCircleY);
 }
 
 //------------------------------------------------
 //draw a line between position (centralX, centralY) and each element of the array
-function drawLinks(stepAngle, centralRadius, centralX, centralY, radius, array) {
-    var angle, startX, startY, endX, endY;
+function links(startX, startY, startR, arrayCircles) {
+    var distort = 500;
+    stroke(strokeColor);
+    for(var i = 0; i < arrayCircles.length; i++) {
+        strokeWeight(2);
+        noFill();
+        curve(startX + startR - distort, startY, startX + startR, startY, arrayCircles[i].x - arrayCircles[i].radius, arrayCircles[i].y, arrayCircles[i].x - arrayCircles[i].radius + distort, arrayCircles[i].y);
+    }
+}
 
-    stroke(strokeColor); 
+//------------------------------------------------
+function drawLinks() {
+    links(centralCircleX, centralCircleY, centralRadius, characters); //draws lines from the central circle to every character circle
 
-    angle = -PI/2; 
-
-    //the line starts from the endge of the central circle 
-    //and it ends to the edge of each character circle
-    for(var i = 0; i < array.length; i++){
-        startX = cos(angle) * centralRadius + centralX; 
-        startY = sin(angle) * centralRadius + centralY;  
-        endX = cos(angle - PI) * radius + array[i].x; 
-        endY = sin(angle - PI) * radius + array[i].y;
-        line(startX, startY, endX, endY);
-        angle += stepAngle;
+    for(var i = 0; i < characters.length; i++) {
+        links(characters[i].x, characters[i].y, characters[i].radius, characters[i].stories);
     }
 }
 
@@ -60,6 +67,9 @@ function drawStories() {
 
             fill(characters[i].stories[j].colorHSB);
             characters[i].stories[j].show(storiesRadius);
+
+            fill(colorText);
+            characters[i].stories[j].showText(colorText);
         }
     }
 }

@@ -9,29 +9,33 @@ var colors = [];
 var backgroundColor;
 var strokeColor; 
 var colorText; 
+//var colorCharacterText; 
 
 var centralCircleX, centralCircleY; //position of the central circle
 var centralRadius, charactersRadius, storiesRadius; //radius; 
 
-//var totalStories = 0;
+var font; 
 //------------------------------------------------
 function preload() {
     table = loadTable('data/mille_notte.csv', 'csv', 'header'); //load file csv in a table structure
+
+    font = loadFont('data/GloriaHallelujah.ttf');
 }
 
 //------------------------------------------------
 function setup() {
     pixelDensity(displayDensity());
     createCanvas(windowWidth, windowHeight); 
-
-    //central circle position settings
-    centralCircleX = windowWidth/2;
-    centralCircleY = windowHeight/2;
+    textFont(font);
 
     //radius settings
-    centralRadius = 30; 
+    centralRadius = 40; 
     charactersRadius = 60;
-    storiesRadius = 30; 
+    storiesRadius = 10; 
+
+    //central circle position settings
+    centralCircleX = centralRadius + 20;
+    centralCircleY = windowHeight/2;
 
     defineColor();
 
@@ -59,7 +63,7 @@ function defineColor() {
             ]; 
     backgroundColor = color(60, 17, 100); //the same color of the other visualization
     strokeColor = color(0, 0, 0); //black
-    colorText = color(0, 0, 0); //black
+    colorText = color(0, 0, 100); //white
 }
 
 //------------------------------------------------
@@ -96,7 +100,7 @@ function getData() {
 
     filterData(); //delete from the array the character 'nessuno' and all the characters with only one story
     
-    print(characterStories);
+    //print(characterStories);
 }
 
 //------------------------------------------------
@@ -119,47 +123,53 @@ function filterData() {
 
 //------------------------------------------------
 function createCharacters() {
-    var stepAngle, angle;
-    var distance = 120; 
-
     //every character is an object 'Character'
     for(var i = 0; i < characterStories.length; i++) {
         var c = new Character(characterStories[i][0]); 
         var s = characterStories[i][1];
         c.indexColor = i+1;
+        c.radius = charactersRadius; 
         
         //every Character story is an object 'Story' and it's pushed in the property character 'stories'
         for(var j = 0; j < s.length; j++) {
-            c.stories.push(new Story(s[i]));
+            var story = new Story(s[j])
+            story.radius = storiesRadius;
+            c.stories.push(story);
         }
 
         characters.push(c); 
     }
 
-    //compute x and y properties of every object 'Character'
-    stepAngle = TWO_PI/characters.length;
-    angle = -PI/2; 
-    for(var i = 0; i < characters.length; i++) {
-        characters[i].x = cos(angle) * distance + centralCircleX; 
-        characters[i].y = sin(angle) * distance + centralCircleY;
-        angle += stepAngle;
-    }
+    updateCharacters(350);
 
-    updateStories(); 
+    updateStories(650, storiesRadius); 
 
     print(characters);
 }
 
 //------------------------------------------------
-function updateStories() {
-    var angle = -PI * 5/6; //-PI * 8/9
-    var stepAngle = TWO_PI/countStories();
-    var distance = 300;
+function updateCharacters(posX) {
+    var r = characters[0].radius; //all circles have the same radius 
+    var step = windowHeight/characters.length;
+    var posY = step - r - 10; 
+
+    //compute x and y properties of every object 'Character' 
+    for(var i = 0; i < characters.length; i++) {
+        characters[i].x = posX;  
+        characters[i].y = posY; 
+        posY += step;
+    }
+}
+
+//------------------------------------------------
+function updateStories(posX, radius) {
+    var totalStories = countStories();
     var numStories = 0; 
-
     var h, s, b, newS; 
+    var step = windowHeight/totalStories;
+    var posY = step - radius - 5; 
+    var shift = [0, 100, 200, 0, 300];
 
-    //compute x and y properties of every object 'Story' inside each character
     for(var i = 0; i < characters.length; i++) {
 
         numStories = characters[i].stories.length;
@@ -170,15 +180,14 @@ function updateStories() {
         s = newS;
         b = brightness(colors[characters[i].indexColor]);
 
+        //compute x and y properties of every object 'Story' inside each character
         for(var j = 0; j < characters[i].stories.length; j++){
-            characters[i].stories[j].x = cos(angle) * distance + centralCircleX; 
-            characters[i].stories[j].y = sin(angle) * distance + centralCircleY; 
-            angle += stepAngle; 
+            characters[i].stories[j].x = posX ;//+ shift[i]; 
+            characters[i].stories[j].y = posY; 
 
-            //characters[i].stories[j].indexColor = i+1; //update indexColor property 
+            characters[i].stories[j].colorHSB = color(h, s, b); //update colorHSB property
 
-            characters[i].stories[j].colorHSB = color(h, s, b);
-
+            posY += step;
             s += newS; 
         }
     }
