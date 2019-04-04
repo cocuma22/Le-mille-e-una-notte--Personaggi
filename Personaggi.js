@@ -4,22 +4,25 @@ var table; //contains csv file in a table structure
 var characterStories = []; //array of array where each element is in the form [character, [array of stories]]
 var characters = []; //array of objects 'Character' that contains characters
 
-//colors
-var colors = [];
+//colors variables 
+var colors = []; //colors to use in character circles and central circle 
 var backgroundColor;
 var strokeColor; 
-var colorText; 
-//var colorCharacterText; 
+var colorText;  
 
-var centralCircleX, centralCircleY; //position of the central circle
-var centralRadius, charactersRadius, storiesRadius; //radius; 
+//central circle position 
+var centralCircleX, centralCircleY;
+
+//radius variables
+var centralRadius, charactersRadius, storiesRadius;
 
 var font; 
+ 
 //------------------------------------------------
 function preload() {
     table = loadTable('data/mille_notte.csv', 'csv', 'header'); //load file csv in a table structure
 
-    font = loadFont('data/GloriaHallelujah.ttf');
+    font = loadFont('data/GloriaHallelujah.ttf'); //load font 
 }
 
 //------------------------------------------------
@@ -29,7 +32,7 @@ function setup() {
     textFont(font);
 
     //radius settings
-    centralRadius = 40; 
+    centralRadius = 80; 
     charactersRadius = 60;
     storiesRadius = 10; 
 
@@ -47,12 +50,14 @@ function setup() {
 //------------------------------------------------
 function draw() {
     background(backgroundColor); 
+    
     drawGraph(); 
 }
 
 //------------------------------------------------
 function defineColor() {
     colorMode(HSB);
+
     colors = [
             color(60, 80, 100), //yellow (central circle)
             color(359, 89, 89), //red
@@ -61,8 +66,9 @@ function defineColor() {
             color(292, 52, 64), //purple
             color(30, 100, 100) //orange
             ]; 
+
     backgroundColor = color(60, 17, 100); //the same color of the other visualization
-    strokeColor = color(0, 0, 0); //black
+    strokeColor = color(20, 98, 33); //the same color of the other visualization //color(0, 0, 0); //black
     colorText = color(0, 0, 100); //white
 }
 
@@ -99,8 +105,6 @@ function getData() {
     }
 
     filterData(); //delete from the array the character 'nessuno' and all the characters with only one story
-    
-    //print(characterStories);
 }
 
 //------------------------------------------------
@@ -140,18 +144,17 @@ function createCharacters() {
         characters.push(c); 
     }
 
-    updateCharacters(350);
+    updateCharacters(500); //update x and y characters properties 
 
-    updateStories(650, storiesRadius); 
+    updateStories(850); //update x, y and colorHSB stories properties
 
     print(characters);
 }
 
 //------------------------------------------------
 function updateCharacters(posX) {
-    var r = characters[0].radius; //all circles have the same radius 
-    var step = windowHeight/characters.length;
-    var posY = step - r - 10; 
+    var step = windowHeight/characters.length; //vertical distance from different characters
+    var posY = step - charactersRadius - 10; 
 
     //compute x and y properties of every object 'Character' 
     for(var i = 0; i < characters.length; i++) {
@@ -162,13 +165,12 @@ function updateCharacters(posX) {
 }
 
 //------------------------------------------------
-function updateStories(posX, radius) {
-    var totalStories = countStories();
+function updateStories(posX) {
+    var totalStories = countStories(); 
     var numStories = 0; 
     var h, s, b, newS; 
     var step = windowHeight/totalStories;
-    var posY = step - radius - 5; 
-    var shift = [0, 100, 200, 0, 300];
+    var posY = step - storiesRadius - 5; 
 
     for(var i = 0; i < characters.length; i++) {
 
@@ -182,7 +184,7 @@ function updateStories(posX, radius) {
 
         //compute x and y properties of every object 'Story' inside each character
         for(var j = 0; j < characters[i].stories.length; j++){
-            characters[i].stories[j].x = posX ;//+ shift[i]; 
+            characters[i].stories[j].x = posX ; 
             characters[i].stories[j].y = posY; 
 
             characters[i].stories[j].colorHSB = color(h, s, b); //update colorHSB property

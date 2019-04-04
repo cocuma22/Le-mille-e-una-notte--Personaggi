@@ -11,7 +11,6 @@ function Character(name) {
 	//METHODS
 	//draw the object 
 	this.show = function() {
-		//color and stroke settings 
 		strokeWeight(2);
 		circle(this.x, this.y, this.radius); 
 	}
@@ -36,7 +35,7 @@ function Story(name) {
 
 	//METHODS
 	this.show = function(radius) {
-		//color and stroke settings
+		strokeWeight(2);
 		circle(this.x, this.y, radius);
 	}
 
