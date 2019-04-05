@@ -4,20 +4,25 @@ var table; //contains csv file in a table structure
 var characterStories = []; //array of array where each element is in the form [character, [array of stories]]
 var characters = []; //array of objects 'Character' that contains characters
 
-//colors variables 
+//color variables 
 var colors = []; //colors to use in character circles and central circle 
 var backgroundColor;
 var strokeColor; 
 var colorText;  
 
-//central circle position 
-var centralCircleX, centralCircleY;
+//circles position 
+var centralCircleX, centralCircleY; //central circle
+var charactersX; //characters x position
+var storiesX; //stories x position
 
 //radius variables
 var centralRadius, charactersRadius, storiesRadius;
 
 var font; 
- 
+
+var isOpen = false; //flag to know if the central circle is showing characters
+
+var lerpValue = 0.05; 
 //------------------------------------------------
 function preload() {
     table = loadTable('data/mille_notte.csv', 'csv', 'header'); //load file csv in a table structure
@@ -36,9 +41,13 @@ function setup() {
     charactersRadius = 60;
     storiesRadius = 10; 
 
-    //central circle position settings
+    //central circles position settings
     centralCircleX = centralRadius + 20;
     centralCircleY = windowHeight/2;
+
+    //characters and stories x position
+    charactersX = 500;
+    storiesX = 850;
 
     defineColor();
 
@@ -50,7 +59,6 @@ function setup() {
 //------------------------------------------------
 function draw() {
     background(backgroundColor); 
-    
     drawGraph(); 
 }
 
@@ -144,32 +152,57 @@ function createCharacters() {
         characters.push(c); 
     }
 
-    updateCharacters(500); //update x and y characters properties 
+    setCharacters(charactersX); //update x and y characters properties 
 
-    updateStories(850); //update x, y and colorHSB stories properties
-
-    print(characters);
+    setStories(storiesX); //update x, y and colorHSB stories properties
 }
 
 //------------------------------------------------
-function updateCharacters(posX) {
+function setCharacters(posX) {
     var step = windowHeight/characters.length; //vertical distance from different characters
     var posY = step - charactersRadius - 10; 
 
-    //compute x and y properties of every object 'Character' 
+    //compute x and y properties of every object 'Character'.
+    //Initially, characters are positioned behind the central circle
+    //Their final position is saved in properties 'finalX' and 'finalY'
     for(var i = 0; i < characters.length; i++) {
-        characters[i].x = posX;  
-        characters[i].y = posY; 
+        characters[i].x = centralCircleX; 
+        characters[i].y = centralCircleY; 
+
+        characters[i].finalX = posX;  
+        characters[i].finalY = posY; 
         posY += step;
     }
 }
 
 //------------------------------------------------
-function updateStories(posX) {
-    var totalStories = countStories(); 
-    var numStories = 0; 
-    var h, s, b, newS; 
-    var step = windowHeight/totalStories;
+function updateCharacters() {
+
+    //compute x and y properties of every object 'Character' 
+    for(var i = 0; i < characters.length; i++) {
+        characters[i].x = lerp(characters[i].x, characters[i].finalX, lerpValue);  
+        characters[i].y = lerp(characters[i].y, characters[i].finalY, lerpValue); 
+    }
+    
+}
+
+//------------------------------------------------
+function rewindCharacters() {
+
+    //compute x and y properties of every object 'Character' 
+    for(var i = 0; i < characters.length; i++) {
+        characters[i].x = lerp(characters[i].x, centralCircleX, lerpValue);  
+        characters[i].y = lerp(characters[i].y, centralCircleY, lerpValue); 
+    }
+    
+}
+
+//------------------------------------------------
+function setStories(posX) {
+    var totalStories = countStories(); //total number of stories 
+    var numStories = 0; //number of stories of a character
+    var h, s, b, newS; //variables to manage color
+    var step = windowHeight/totalStories; //vertical distance from different stories
     var posY = step - storiesRadius - 5; 
 
     for(var i = 0; i < characters.length; i++) {
@@ -177,15 +210,21 @@ function updateStories(posX) {
         numStories = characters[i].stories.length;
         newS = floor(100/numStories);
 
-        //update colorHSB property
+        //update colorHSB property.
+        //stories has the same color of their character with a different saturation
         h = hue(colors[characters[i].indexColor]);
         s = newS;
         b = brightness(colors[characters[i].indexColor]);
 
-        //compute x and y properties of every object 'Story' inside each character
+        //compute x and y properties of every object 'Story' inside each character.
+        //Initially, stories are positioned behing their characters when they are visible 
+        //Their final position is saved in properties 'finalX' and 'finalY'
         for(var j = 0; j < characters[i].stories.length; j++){
-            characters[i].stories[j].x = posX ; 
-            characters[i].stories[j].y = posY; 
+            characters[i].stories[j].x = characters[i].x; 
+            characters[i].stories[j].y = characters[i].y;
+
+            characters[i].stories[j].finalX = posX; 
+            characters[i].stories[j].finalY = posY; 
 
             characters[i].stories[j].colorHSB = color(h, s, b); //update colorHSB property
 
@@ -196,6 +235,42 @@ function updateStories(posX) {
 }
 
 //------------------------------------------------
+function updateStories(character) {
+
+    //compute x and y properties of the object 'Character' 
+    for(var i = 0; i < character.stories.length; i++) {
+        character.stories[i].x = lerp(character.stories[i].x, character.stories[i].finalX, lerpValue);  
+        character.stories[i].y = lerp(character.stories[i].y, character.stories[i].finalY, lerpValue); 
+    }
+    
+}
+
+//------------------------------------------------
+function rewindStories(character) {
+
+    //compute x and y properties of the object 'Character' 
+    for(var i = 0; i < character.stories.length; i++) {
+        character.stories[i].x = lerp(character.stories[i].x, character.x, lerpValue);  
+        character.stories[i].y = lerp(character.stories[i].y, character.y, lerpValue); 
+    }
+    
+}
+
+//------------------------------------------------
+function rewindAllStories() {
+
+    //compute x and y properties of every object 'Character' 
+    for(var i = 0; i < characters[i].length; i++) {
+        for(var j = 0; j < characters[i].stories.length; j++) {
+            characters[i].stories[j].x = lerp(characters[i].stories[j].x, characters[i].finalX, lerpValue);  
+            characters[i].stories[j].y = lerp(characters[i].stories[j].y, characters[i].finalY, lerpValue); 
+        }
+    }
+    
+}
+
+//------------------------------------------------
+//Return the total of stories 
 function countStories() {
     var counter = 0; 
 
@@ -213,11 +288,13 @@ function mouseClicked() {
         for(var i = 0; i < characters.length; i++) {
             characters[i].visible = !characters[i].visible; 
         }
-    }
-
+        isOpen = !isOpen; 
+    } 
+    
     //check if the mouse has clicked on a character circle
     for(var i = 0; i < characters.length; i++) {
-        if(checkHover(characters[i].x, characters[i].y, characters[i].radius)) {
+        if(checkHover(characters[i].x, characters[i].y, characters[i].radius) && isOpen &&
+            characters[i].x > centralCircleX + 30) {
             for(var j = 0; j < characters[i].stories.length; j++) {
                 characters[i].stories[j].visible = !characters[i].stories[j].visible;
             }
@@ -226,6 +303,7 @@ function mouseClicked() {
 }
 
 //------------------------------------------------
+//Flag to know if the mouse is hover the circle with params passed as arguments 
 function checkHover(x, y, r) {
     var d = dist(mouseX, mouseY, x, y); 
 

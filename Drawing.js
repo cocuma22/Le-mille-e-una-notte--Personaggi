@@ -1,12 +1,11 @@
 //------------------------------------------------
 function drawGraph() {
 
-    
-    drawFirstCircle(); 
-    
+    drawStories(); 
+
     drawCharacters(); //draws each character
 
-    drawStories(); 
+    drawFirstCircle(); 
 
 
 }
@@ -14,18 +13,25 @@ function drawGraph() {
 //------------------------------------------------
 //draw character circles 
 function drawCharacters() { 
-
     for(var i = 0; i < characters.length; i++) {
+        //if characters are visible... 
         if(characters[i].visible) {
-            //draw circles
-            stroke(strokeColor);
-            fill(colors[characters[i].indexColor]);
-            characters[i].show(charactersRadius); //draw a circle for each character
+            updateCharacters();
+        } else {
+            rewindCharacters(); 
+        }
+
+        //draw circles
+        stroke(strokeColor);
+        fill(colors[characters[i].indexColor]);
+        characters[i].show(charactersRadius); //draw a circle for each character
+    
+        //draw texts
+        fill(colorText);
+        characters[i].showText(colorText); //write the name of each character
         
-            //draw texts
-            fill(colorText);
-            characters[i].showText(colorText); //write the name of each character
-        
+        //links are drawn only if characters circles are outsize central circle position
+        if(characters[i].x > centralCircleX + 20) {
             //draw link from central circle to the character 
             drawLink(centralCircleX, centralCircleY, centralRadius, characters[i]);
         }
@@ -50,20 +56,44 @@ function drawFirstCircle() {
 }
 
 //------------------------------------------------
-//draw a curve between a starting circle and an array of circles
-function links(startX, startY, startR, arrayCircles) {
-    var distort = 500;
+//draw stories circles 
+function drawStories() {
+    for(var i = 0; i < characters.length; i++) {
 
-    //stroke and fill settings
-    strokeWeight(2);
-    stroke(strokeColor);
-    noFill();
+        //if characters are visible... 
+        if(characters[i].visible){
+            for(var j = 0; j < characters[i].stories.length; j++) { 
+                //if stories of the character 'i' are visible...
+                if(characters[i].stories[j].visible) {
+                    updateStories(characters[i]);
+                } else {
+                    rewindStories(characters[i]); 
+                }
 
-    for(var i = 0; i < arrayCircles.length; i++) {
-        curve(startX + startR - distort, startY, 
-                startX + startR, startY, //real start
-                arrayCircles[i].x - arrayCircles[i].radius, arrayCircles[i].y, //real end
-                arrayCircles[i].x - arrayCircles[i].radius + distort, arrayCircles[i].y);
+                //texts are visible only if circles stories are drawn nead their final x position
+                if(characters[i].stories[j].x > characters[i].stories[j].finalX - 50) {
+                    //draw texts
+                    fill(strokeColor);
+                    noStroke();
+                    characters[i].stories[j].showText(colorText);
+                }
+
+                //stories circles are drawn only if their positions is outsize their characters position
+                if(characters[i].stories[j].x > characters[i].x + 20){
+                    //draw circles
+                    fill(characters[i].stories[j].colorHSB);
+                    strokeWeight(2);
+                    stroke(strokeColor);
+                    characters[i].stories[j].show(storiesRadius);
+                    
+                    //draw link from central circle to the character 
+                    drawLink(characters[i].x, characters[i].y, characters[i].radius, characters[i].stories[j]);
+                }
+            }
+        } else {
+            //if characters are not visible, stories positions are updated relatively to their characters position
+            setStories(storiesX);
+        }
     }
 }
 
@@ -73,47 +103,14 @@ function drawLink(startX, startY, startR, circle) {
 
     //stroke and fill settings
     strokeWeight(2);
-    stroke(strokeColor);
+    //stroke(strokeColor);
     noFill();
-
     
     curve(startX + startR - distort, startY, 
             startX + startR, startY, //real start
             circle.x - circle.radius, circle.y, //real end
             circle.x - circle.radius + distort, circle.y);
 
-}
-
-//------------------------------------------------
-function drawLinks() {
-    links(centralCircleX, centralCircleY, centralRadius, characters); //draws curves from the central circle to every character circle
-
-    for(var i = 0; i < characters.length; i++) {
-        links(characters[i].x, characters[i].y, characters[i].radius, characters[i].stories);
-    }
-}
-
-//------------------------------------------------
-//draw stories circles 
-function drawStories() {
-    for(var i = 0; i < characters.length; i++) {
-        if(characters[i].visible){
-            for(var j = 0; j < characters[i].stories.length; j++) { 
-                if(characters[i].stories[j].visible) {
-                    //draw circles
-                    fill(characters[i].stories[j].colorHSB);
-                    characters[i].stories[j].show(storiesRadius);
-
-                    //draw texts
-                    fill(colorText);
-                    characters[i].stories[j].showText(colorText);
-
-                    //draw link from central circle to the character 
-                    drawLink(characters[i].x, characters[i].y, characters[i].radius, characters[i].stories[j]);
-                }
-            }
-        }
-    }
 }
 
 
