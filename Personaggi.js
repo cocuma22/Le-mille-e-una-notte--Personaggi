@@ -34,17 +34,17 @@ function preload() {
 //------------------------------------------------
 function setup() {
     pixelDensity(displayDensity());
-    createCanvas(windowWidth, windowHeight); 
+    createCanvas(windowWidth *0.95, windowHeight - 40); 
     textFont(font);
 
     //radius settings relatively to window height
-    centralRadius = floor(windowHeight/9); //~80 in full screen
-    charactersRadius = floor(windowHeight/12); //~60 in full screen
-    storiesRadius = floor(windowHeight/72); //~10 in full screen
+    centralRadius = floor(height/9); //~80 in full screen
+    charactersRadius = floor(height/12); //~60 in full screen
+    storiesRadius = floor(height/72); //~10 in full screen
 
     //central circles position settings
     centralCircleX = centralRadius + 20;
-    centralCircleY = windowHeight/2;
+    centralCircleY = height/2;
 
     //characters and stories x position
     charactersX = 500;
@@ -160,7 +160,7 @@ function createCharacters() {
 
 //------------------------------------------------
 function setCharacters(posX) {
-    var step = windowHeight/characters.length; //vertical distance from different characters
+    var step = height/characters.length; //vertical distance from different characters
     var posY = step - charactersRadius - 10; 
 
     //compute x and y properties of every object 'Character'.
@@ -203,7 +203,7 @@ function setStories(posX) {
     var totalStories = countStories(); //total number of stories 
     var numStories = 0; //number of stories of a character
     var h, s, b, newS; //variables to manage color
-    var step = windowHeight/totalStories; //vertical distance from different stories
+    var step = height/totalStories; //vertical distance from different stories
     var posY = step - storiesRadius - 5; 
 
     for(var i = 0; i < characters.length; i++) {
