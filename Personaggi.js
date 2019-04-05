@@ -8,7 +8,7 @@ var characters = []; //array of objects 'Character' that contains characters
 var colors = []; //colors to use in character circles and central circle 
 var backgroundColor;
 var strokeColor; 
-var colorText;  
+var textColor;  
 
 //circles position 
 var centralCircleX, centralCircleY; //central circle
@@ -21,6 +21,7 @@ var centralRadius, charactersRadius, storiesRadius;
 var font; 
 
 var isOpen = false; //flag to know if the central circle is showing characters
+var isClicked = false; //flag to know if the mouse has clicked on the central circle 
 
 var lerpValue = 0.05; 
 //------------------------------------------------
@@ -36,10 +37,10 @@ function setup() {
     createCanvas(windowWidth, windowHeight); 
     textFont(font);
 
-    //radius settings
-    centralRadius = 80; 
-    charactersRadius = 60;
-    storiesRadius = 10; 
+    //radius settings relatively to window height
+    centralRadius = floor(windowHeight/9); //~80 in full screen
+    charactersRadius = floor(windowHeight/12); //~60 in full screen
+    storiesRadius = floor(windowHeight/72); //~10 in full screen
 
     //central circles position settings
     centralCircleX = centralRadius + 20;
@@ -54,6 +55,9 @@ function setup() {
     getData();
 
     createCharacters();
+
+    print("h: " + windowHeight); 
+    print("r: " + centralRadius);
 }
 
 //------------------------------------------------
@@ -77,7 +81,7 @@ function defineColor() {
 
     backgroundColor = color(60, 17, 100); //the same color of the other visualization
     strokeColor = color(20, 98, 33); //the same color of the other visualization //color(0, 0, 0); //black
-    colorText = color(0, 0, 100); //white
+    textColor = color(0, 0, 100); //white
 }
 
 //------------------------------------------------
@@ -289,12 +293,18 @@ function mouseClicked() {
             characters[i].visible = !characters[i].visible; 
         }
         isOpen = !isOpen; 
+        isClicked = true; 
+    } else {
+        isClicked = false; 
     } 
     
     //check if the mouse has clicked on a character circle
     for(var i = 0; i < characters.length; i++) {
+        //if the mouse has clicked on a character circle AND the character is drawn
+        //AND the character position is different from the central circle position 
+        //AND the central circle has not clicked... 
         if(checkHover(characters[i].x, characters[i].y, characters[i].radius) && isOpen &&
-            characters[i].x > centralCircleX + 30) {
+            characters[i].x > centralCircleX + 30 && !isClicked) {
             for(var j = 0; j < characters[i].stories.length; j++) {
                 characters[i].stories[j].visible = !characters[i].stories[j].visible;
             }

@@ -19,11 +19,11 @@ function Character(name) {
 	}
 
 	//write name property of the object
-	this.showText = function(colorText) {
-		textSize(13); 
+	this.showText = function(colorText) { 
 		textAlign(CENTER, CENTER);
 		rectMode(CENTER);
-		text(this.name, this.x, this.y, 110, 50);
+		textSize(this.radius/5); 
+		text(this.name, this.x, this.y, this.radius/0.5, this.radius/1.2);
 	}
 }
 
@@ -46,8 +46,8 @@ function Story(name) {
 	}
 
 	this.showText = function(colorText) { 
-		textSize(13); 
 		textAlign(LEFT, CENTER); 
+		textSize(13);
 		text(this.name, this.x + this.radius + 5, this.y - 4);
 	}
 }

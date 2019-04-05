@@ -27,12 +27,14 @@ function drawCharacters() {
         characters[i].show(charactersRadius); //draw a circle for each character
     
         //draw texts
-        fill(colorText);
-        characters[i].showText(colorText); //write the name of each character
+        fill(textColor);
+        noStroke();
+        characters[i].showText(textColor); //write the name of each character
         
         //links are drawn only if characters circles are outsize central circle position
         if(characters[i].x > centralCircleX + 20) {
             //draw link from central circle to the character 
+            stroke(strokeColor);
             drawLink(centralCircleX, centralCircleY, centralRadius, characters[i]);
         }
     } 
@@ -42,15 +44,16 @@ function drawCharacters() {
 function drawFirstCircle() {
     //color and stroke settings 
     strokeWeight(2);
+    stroke(strokeColor);
     fill(colors[0]); 
 
     circle(centralCircleX, centralCircleY, centralRadius); //central circle
 
     //text settings
-    fill(colorText);
+    fill(textColor);
     stroke(strokeColor);
     textAlign(CENTER, CENTER);
-    textSize(20);
+    textSize(centralRadius/4); //~20 in full screen
 
     text("Personaggi", centralCircleX, centralCircleY);
 }
@@ -75,7 +78,7 @@ function drawStories() {
                     //draw texts
                     fill(strokeColor);
                     noStroke();
-                    characters[i].stories[j].showText(colorText);
+                    characters[i].stories[j].showText(textColor);
                 }
 
                 //stories circles are drawn only if their positions is outsize their characters position
