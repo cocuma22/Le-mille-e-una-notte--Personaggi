@@ -28,13 +28,11 @@ function drawCharacters() {
     
         //draw texts
         fill(textColor);
-        noStroke();
         characters[i].showText(textColor); //write the name of each character
         
         //links are drawn only if characters circles are outsize central circle position
         if(characters[i].x > centralCircleX + 20) {
             //draw link from central circle to the character 
-            stroke(strokeColor);
             drawLink(centralCircleX, centralCircleY, centralRadius, characters[i]);
         }
     } 
