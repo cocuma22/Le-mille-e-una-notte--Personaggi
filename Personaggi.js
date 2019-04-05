@@ -55,9 +55,6 @@ function setup() {
     getData();
 
     createCharacters();
-
-    print("h: " + windowHeight); 
-    print("r: " + centralRadius);
 }
 
 //------------------------------------------------
