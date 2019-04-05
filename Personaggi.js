@@ -34,7 +34,7 @@ function preload() {
 //------------------------------------------------
 function setup() {
     pixelDensity(displayDensity());
-    createCanvas(windowWidth *0.95, windowHeight - 40); 
+    createCanvas(windowWidth, windowHeight); 
     textFont(font);
 
     //radius settings relatively to window height
